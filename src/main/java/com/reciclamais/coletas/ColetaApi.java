@@ -2,8 +2,12 @@ package com.reciclamais.coletas;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -14,8 +18,12 @@ public class ColetaApi {
 
     @PostMapping
     @ResponseBody
-    public ColetaDTO criar(@RequestBody ColetaDTO coleta) {
-        return facade.criar(coleta);
+    public ResponseEntity<ColetaDTO> criar(@RequestBody ColetaDTO coletaDTO, UriComponentsBuilder uriBuilder) {
+        coletaDTO.setDatahora(LocalDateTime.now());
+        coletaDTO = facade.criar(coletaDTO);
+
+        URI uri = uriBuilder.path("/coletas/{id}").buildAndExpand(coletaDTO.getId()).toUri();
+        return ResponseEntity.created(uri).body(coletaDTO);
     }
 
     @PutMapping("/{coletaId}")
@@ -38,7 +46,8 @@ public class ColetaApi {
 
     @DeleteMapping("/{coletaId}")
     @ResponseBody
-    public String remover(@PathVariable("coletaId") Long coletaId) {
-        return facade.excluir(coletaId);
+    public ResponseEntity remover(@PathVariable("coletaId") Long coletaId) {
+        facade.excluir(coletaId);
+        return ResponseEntity.ok().build();
     }
 }

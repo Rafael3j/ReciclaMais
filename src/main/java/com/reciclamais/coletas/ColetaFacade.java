@@ -1,6 +1,7 @@
 package com.reciclamais.coletas;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -63,6 +64,7 @@ public class ColetaFacade {
 
     public ColetaDTO listarPorId(Long coletaId) {
         Optional<Coleta> optEntity = coletaRepository.findById(coletaId);
+
         return optEntity.map(this::converter).orElse(null);
     }
 
@@ -73,8 +75,7 @@ public class ColetaFacade {
                 .map(this::converter).collect(Collectors.toList());
     }
 
-    public String excluir(Long coletaId) {
+    public void excluir(Long coletaId) {
         coletaRepository.deleteById(coletaId);
-        return "DELETED";
     }
 }
