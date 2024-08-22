@@ -1,7 +1,6 @@
 package com.reciclamais.coletas;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,8 +15,8 @@ public class ColetaFacade {
     public ColetaDTO criar(ColetaDTO coletaDTO) {
         Coleta coleta = new Coleta();
         coleta.setNome(coletaDTO.getNome());
-        coleta.setCpf(coletaDTO.getCpf());
-        coleta.setTelefone(coletaDTO.getTelefone());
+        coleta.setCpf(tratarCpf(coletaDTO.getCpf()));
+        coleta.setTelefone(tratarTelefone(coletaDTO.getTelefone()));
         coleta.setEmail(coletaDTO.getEmail());
         coleta.setTipoobjetodescartado(coletaDTO.getTipoobjetodescartado());
         coleta.setObjetodescartado(coletaDTO.getObjetodescartado());
@@ -65,7 +64,14 @@ public class ColetaFacade {
     public ColetaDTO listarPorId(Long coletaId) {
         Optional<Coleta> optEntity = coletaRepository.findById(coletaId);
 
+
         return optEntity.map(this::converter).orElse(null);
+    }
+
+    public List<ColetaDTO> buscarPorNome(String nome) {
+        return coletaRepository.BuscarPorNome(nome)
+                .stream()
+                .map(coleta -> converter(coleta)).collect(Collectors.toList());
     }
 
     public List<ColetaDTO> listarTodos() {
@@ -77,5 +83,21 @@ public class ColetaFacade {
 
     public void excluir(Long coletaId) {
         coletaRepository.deleteById(coletaId);
+    }
+
+    private String tratarTelefone(String telefone){
+        return telefone
+                .replace("-", "")
+                .replace("(", "")
+                .replace(")", "")
+                .replace(" ", "")
+                .trim();
+    }
+
+    private String tratarCpf(String cpf){
+        return cpf
+                .replace("-", "")
+                .replace(".", "")
+                .trim();
     }
 }

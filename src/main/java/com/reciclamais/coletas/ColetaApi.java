@@ -44,6 +44,12 @@ public class ColetaApi {
         return facade.listarTodos();
     }
 
+    @GetMapping(value = "buscarPorNome")
+    @ResponseBody
+    public List<ColetaDTO> buscarPorNome(@RequestParam String nome) {
+        return facade.buscarPorNome(nome.toLowerCase());
+    }
+
     @DeleteMapping("/{coletaId}")
     @ResponseBody
     public ResponseEntity remover(@PathVariable("coletaId") Long coletaId) {
